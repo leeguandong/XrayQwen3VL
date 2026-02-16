@@ -13,6 +13,10 @@ merged_model/
 *.bin
 *.safetensors
 
+# 保留 results 目录下的权重
+!results/**/*.safetensors
+!results/**/*.json
+
 # 系统文件
 .DS_Store
 Thumbs.db
