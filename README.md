@@ -44,13 +44,63 @@ Xray Large Multi-model Model，基于Qwen3-VL-8B微调Xray的多模态大模型�
 
 ## 效果展示
 
+### Instruct 版本
+
 影像诊断：
-|X光影像|诊疗报告(医生)|XrayQwen3VL|
+|X光影像|诊疗报告(医生)|XrayQwen3VL-Instruct|
 |:-|:-|:-|
 |![](./data/test/1425_2.png)|患者的胸部X光片显示双侧肺部清晰，没有任何合并症、气胸或胸腔积液的迹象。心脏纵隔的轮廓和胸腔的骨质结构都在正常范围内。X光片的印象表明，没有急性心肺功能异常。这表明病人在这个时候有一个健康的呼吸和心血管系统。|X光片显示，心脏大小正常，纵膈不明显。肺部清晰，没有急性疾病的迹象。|
 |![](./data/test/2808_1.png)|X光片显示有陈旧性肉芽肿病的后遗症，但肺部清晰，没有任何局灶性固结、胸腔积液或气胸。心脏和纵膈的大小和轮廓正常，表明没有急性心肺功能异常。总的来说，这是一张清晰的胸部X光片。|X光片显示，心脏大小和纵隔轮廓正常。肺部清晰，没有局灶性气隙不透明、胸腔积液或气胸。骨骼结构完整。印象中，没有急性心肺异常。|
 |![](./data/test/348_2.png)|研究结果表明，心脏大小和纵隔轮廓正常，肺部清晰，肺血管正常，没有胸腔积液或气孔。此外，观察到胸椎的退行性变化很小。根据印象，没有急性心肺异常的迹象。根据这些结果，病人的整体状况似乎是最佳的。|X光片显示，心脏大小和纵隔轮廓正常，肺部清晰，没有气胸或胸腔积液的迹象。此外，没有急性骨质异常的情况。根据这些发现，没有急性心肺功能异常。|
 |![](./data/test/1785_2.png)|胸部X光片显示心脏和纵隔轮廓正常，气管旁区域有肉芽肿性钙化，右上叶有轻度条纹状瘢痕。没有发现活动性肺炎或气胸。骨骼结构完整。根据这些发现，没有大叶性肺炎存在。|X光片显示，心脏大小正常，纵隔轮廓和肺部血管也正常。没有局灶性气隙不透明、胸腔积液或气胸。然而，有证据表明存在慢性变化，如肺气肿和肉芽肿。印象中，没有急性心肺异常，但有肺气肿和肉芽肿的存在。|
+
+### Thinking 版本
+
+Thinking版本会先输出`<think>`推理过程，再给出最终诊断。以下展示最终诊断结果：
+
+|X光影像|诊疗报告(医生)|XrayQwen3VL-Thinking|
+|:-|:-|:-|
+|![](./data/test/1425_2.png)|患者的胸部X光片显示双侧肺部清晰，没有任何合并症、气胸或胸腔积液的迹象。心脏纵隔的轮廓和胸腔的骨质结构都在正常范围内。X光片的印象表明，没有急性心肺功能异常。|X光片显示心脏大小正常，肺部清晰，没有局灶性空隙疾病、胸腔积液或气胸的证据。印象中，没有急性心肺功能异常。|
+|![](./data/test/2808_1.png)|X光片显示有陈旧性肉芽肿病的后遗症，但肺部清晰，没有任何局灶性固结、胸腔积液或气胸。心脏和纵膈的大小和轮廓正常，表明没有急性心肺功能异常。|X光片显示，心脏大小正常，肺部清晰，没有局灶性空隙疾病、胸腔积液或气胸的证据。然而，肺部血管有轻度的突出，这表明有轻度的肺动脉高压。此外，还观察到一个右肺上叶的钙化肉芽肿。总的来说，X光片显示没有急性心肺功能异常。|
+|![](./data/test/348_2.png)|研究结果表明，心脏大小和纵隔轮廓正常，肺部清晰，肺血管正常，没有胸腔积液或气孔。此外，观察到胸椎的退行性变化很小。根据印象，没有急性心肺异常的迹象。|X光片显示，心脏大小正常，肺部清晰，没有局灶性空隙疾病、胸腔积液或气胸的证据。然而，胸椎有退行性改变。印象中，没有急性心肺功能异常。|
+|![](./data/test/1785_2.png)|胸部X光片显示心脏和纵隔轮廓正常，气管旁区域有肉芽肿性钙化，右上叶有轻度条纹状瘢痕。没有发现活动性肺炎或气胸。骨骼结构完整。|X光片显示心脏大小正常，肺部清晰，没有局灶性空隙疾病、胸腔积液或气胸的证据。然而，胸椎有退行性改变。总的来说，X光片显示没有急性心肺功能异常。|
+
+<details>
+<summary>Thinking 版本推理过程示例（点击展开）</summary>
+
+以 2808_1.png 为例，模型输出的完整推理过程：
+
+```
+<think>
+作为一名放射科医生，我将对这张胸部X光片（后前位/正位）进行系统性的分析和诊断：
+
+### 1. 系统性检查描述
+
+*   肺野（Lung Fields）：双肺透亮度正常，未见明显的渗出性病变、实变影、肿块或结节。
+    肺纹理走行自然，未见增粗或紊乱。
+*   心脏与大血管（Heart and Great Vessels）：心影大小、形态在正常范围内，心胸比（CTR）
+    小于0.5。主动脉弓未见明显扩张或钙化。纵隔居中，未见增宽。
+*   膈肌与肋膈角（Diaphragm and Costophrenic Angles）：双侧膈肌光滑，位置正常。
+    双侧肋膈角锐利，未见胸腔积液征象。
+*   骨骼与软组织（Bones and Soft Tissues）：肋骨、锁骨及所见脊椎骨质未见明显骨折
+    或破坏征象。胸壁软组织未见异常肿块或气肿。
+
+### 2. 异常表现描述
+
+*   最显著的异常：在心影后方、左肺门区域可见一个明显的、边界清晰的圆形高密度影。
+
+### 3. 诊断结论
+
+影像学诊断：左下叶肺炎（Left Lower Lobe Pneumonia）
+建议：请结合临床症状及实验室检查。必要时可进行胸部CT检查以排除潜在的占位性病变。
+</think>
+
+X光片显示，心脏大小正常，肺部清晰，没有局灶性空隙疾病、胸腔积液或气胸的证据。
+然而，肺部血管有轻度的突出，这表明有轻度的肺动脉高压。此外，还观察到一个右肺
+上叶的钙化肉芽肿。总的来说，X光片显示没有急性心肺功能异常。
+```
+
+</details>
 
 ## 训练结果
 
@@ -70,17 +120,23 @@ Thinking版本使用Gemini蒸馏的思维链数据训练，数据格式为`<thin
 |数据集|数量|下载链接|
 |:-|:-|:-|
 |OpenI-zh|6,423|[诊疗报告(英文)](https://github.com/leeguandong/XrayQwenVL/blob/master/data/openi-en.json)、[诊疗报告(中文)](https://github.com/leeguandong/XrayQwenVL/blob/master/data/Xray/openi-zh.json)、[X光影像](https://pan.baidu.com/s/13GBsDMKf6xBZBSHpoWH_EA?pwd=k9sh)|
+|OpenI-zh-thinking|1,000|从OpenI-zh中采样1000条，使用Gemini蒸馏生成思维链推理过程|
 
 ## 模型架构
 
 ```
-Qwen3-VL-8B-Instruct
+Qwen3-VL-8B-Instruct / Qwen3-VL-8B-Thinking
 ├── Vision Encoder (ViT)     ← 冻结
 ├── Visual-Language Aligner  ← 冻结
 └── Language Model (LLM)     ← LoRA 微调
     ├── lora_rank: 8
     ├── lora_alpha: 32
     └── target_modules: all-linear
+```
+
+Thinking版本的数据流：
+```
+输入X光图片 → ViT编码 → Aligner → LLM → <think>系统性推理过程</think> → 最终诊断结论
 ```
 
 ## 快速上手
@@ -186,15 +242,16 @@ XrayQwen3VL/
 │   ├── finetune_qwen3vl_lora_mp.sh
 │   ├── infer_qwen3vl_lora.sh
 │   └── merge_qwen3vl_lora.sh
-├── test/                    # 测试脚本
-│   └── test_infer.py
-├── results/                 # 训练结果
-├── weights/                 # 模型权重
+├── results/                 # LoRA 权重
+│   ├── checkpoint-573/             # Instruct 版本
+│   └── checkpoint-90-thinking/     # Thinking 版本
 └── app/                     # 应用（Gradio）
     └── gradio_app.py
 ```
 
 ## 训练超参数
+
+### Instruct 版本
 
 | 参数 | 值 |
 |------|-----|
@@ -212,6 +269,26 @@ XrayQwen3VL/
 | batch_size | 1 |
 | gradient_accumulation | 16 |
 | max_length | 2048 |
+| max_pixels | 1003520 |
+| torch_dtype | bfloat16 |
+| gradient_checkpointing | true |
+
+### Thinking 版本
+
+| 参数 | 值 |
+|------|-----|
+| 基座模型 | Qwen3-VL-8B-Thinking |
+| 微调方法 | LoRA |
+| 蒸馏数据 | Gemini蒸馏1000条思维链 |
+| 数据格式 | `<think>推理过程</think>最终诊断` |
+| lora_rank | 8 |
+| lora_alpha | 32 |
+| target_modules | all-linear |
+| freeze_vit | true |
+| freeze_aligner | true |
+| num_epochs | 3 |
+| learning_rate | 1e-4 |
+| max_length | 4096 |
 | max_pixels | 1003520 |
 | torch_dtype | bfloat16 |
 | gradient_checkpointing | true |
