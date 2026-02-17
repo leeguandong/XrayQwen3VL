@@ -39,6 +39,7 @@ Xray Large Multi-model Model，基于Qwen3-VL-8B微调Xray的多模态大模型�
 ## 本文贡献
 
 - 借助Xray开源数据集，基于Qwen3-VL-8B-Instruct训练微调，并开放了用于学术研究的训练LoRA权重（`results/checkpoint-573/`），推理时需要自行加载原始的Qwen3-VL-8B-Instruct权重。
+- 新增Thinking版本：使用Gemini蒸馏1000条带思维链的诊断数据，基于Qwen3-VL-8B-Thinking训练，模型会先进行系统性推理再给出诊断结论。
 - 相比前作XrayQwenVL/XrayQwen2VL，升级到Qwen3-VL架构，使用ms-swift v4框架，支持单卡/多卡训练。
 
 ## 效果展示
@@ -56,6 +57,9 @@ Xray Large Multi-model Model，基于Qwen3-VL-8B微调Xray的多模态大模型�
 | 基座模型 | 方法 | 训练集 | 验证集 | Train Loss | Eval Loss | Token Acc |
 |---------|------|--------|--------|-----------|-----------|-----------|
 | Qwen3-VL-8B-Instruct | LoRA | 6,102 | 321 | 1.382 | 1.250 | 69% / 66% |
+| Qwen3-VL-8B-Thinking | LoRA | 950 | 50 | 0.865 | 0.893 | 76% / 75% |
+
+Thinking版本使用Gemini蒸馏的思维链数据训练，数据格式为`<think>推理过程</think>最终诊断`。
 
 ## 数据集
 
@@ -95,16 +99,25 @@ pip install tf-keras
 
 ### 2.模型推理
 
-|模型权重|下载链接|微调方法|
-|:-|:-|:-|
-|checkpoint-573|[XrayQwen3VL/results/checkpoint-573](https://github.com/leeguandong/XrayQwen3VL/tree/main/results/checkpoint-573)|LoRA|
+|模型权重|基座模型|下载链接|微调方法|
+|:-|:-|:-|:-|
+|checkpoint-573|Qwen3-VL-8B-Instruct|[results/checkpoint-573](https://github.com/leeguandong/XrayQwen3VL/tree/main/results/checkpoint-573)|LoRA|
+|checkpoint-90-thinking|Qwen3-VL-8B-Thinking|[results/checkpoint-90-thinking](https://github.com/leeguandong/XrayQwen3VL/tree/main/results/checkpoint-90-thinking)|LoRA + 思维链蒸馏|
 
 #### CLI推理
 
 ```bash
+# Instruct 版本
 CUDA_VISIBLE_DEVICES=0 MAX_PIXELS=1003520 swift infer \
     --model /path/to/Qwen3-VL-8B-Instruct \
     --adapters results/checkpoint-573 \
+    --torch_dtype bfloat16 \
+    --infer_backend pt
+
+# Thinking 版本（输出包含 <think>推理过程</think> + 诊断结论）
+CUDA_VISIBLE_DEVICES=0 MAX_PIXELS=1003520 swift infer \
+    --model /path/to/Qwen3-VL-8B-Thinking \
+    --adapters results/checkpoint-90-thinking \
     --torch_dtype bfloat16 \
     --infer_backend pt
 ```
